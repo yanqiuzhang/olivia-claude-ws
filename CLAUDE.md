@@ -26,21 +26,22 @@ Examples of things to capture:
 ## Quick Start
 
 ```bash
-# Start database
-docker compose up -d
+# Run WebSocket service (port 3000)
+cd services/api && uv run fastapi dev --port 3000
 
-# Run API (in new terminal)
-cd services/api && uv run fastapi dev
-
-# Run Swift client (in new terminal)
-cd apps/macos-client && swift run OliviaClaudeClient
+# Assumes backend API is running at http://localhost:8000
 ```
 
 ## Structure
 - `apps/macos-client/` - SwiftUI desktop app (submodule)
-- `services/api/` - FastAPI Python backend (submodule)
+- `services/api/` - Queue WebSocket Service (port 3000)
 - `specs/` - Feature specifications (plan-mode output)
-- `docker-compose.yml` - PostgreSQL database
+
+## WebSocket Service
+Real-time queue status broadcasting:
+- Connect: `ws://localhost:3000/ws`
+- Polls backend API every 3 seconds
+- Broadcasts queue changes to all connected clients
 
 ## Skills (Commands)
 Available in `.claude/skills/`:
@@ -80,6 +81,12 @@ git push
 ```
 
 ## API Reference
-- Swagger: http://localhost:8000/docs
-- Health: http://localhost:8000/health
-- Items: http://localhost:8000/items (from database)
+### WebSocket Service (port 3000)
+- Swagger: http://localhost:3000/docs
+- Health: http://localhost:3000/health
+- WebSocket: ws://localhost:3000/ws
+- Notify: POST http://localhost:3000/notify
+
+### Backend API (port 8000)
+- GET /queue/list - Get queue items
+- GET /queue/current - Get current serving number
